@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{product/_layout}">
+<head>
+    <title>Đặt hàng thành công</title>
+</head>
+<body>
+<div layout:fragment="content" class="container body-content">
+    <h1>Đặt hàng thành công</h1>
+    <p class="lead">Cảm ơn bạn đã đặt hàng. Đơn hàng đã được ghi nhận.</p>
+    <a class="btn btn-primary" th:href="@{/products}">Tiếp tục mua sắm</a>
+</div>
+</body>
+</html>

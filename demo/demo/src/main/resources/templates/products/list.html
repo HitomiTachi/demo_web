@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layout}">
+<head>
+    <title>Danh sách sản phẩm</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0">Danh sách sản phẩm</h2>
+        <a class="btn btn-success" th:href="@{/products/add}" sec:authorize="hasRole('ADMIN')">+ Thêm sản phẩm</a>
+    </div>
+    <div th:if="${success}" class="alert alert-success">[[${success}]]</div>
+    <div class="card">
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead class="table-primary">
+                <tr>
+                    <th>Mã</th>
+                    <th>Tên</th>
+                    <th>Giá</th>
+                    <th>Hình ảnh</th>
+                    <th>Loại</th>
+                    <th>Hành động</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="product : ${products}">
+                    <td th:text="${product.id}"></td>
+                    <td th:text="${product.name}"></td>
+                    <td th:text="${#numbers.formatInteger(product.price, 0, 'POINT')} + ' ₫'"></td>
+                    <td class="text-center">
+                        <img th:if="${product.image}" 
+                             th:src="@{'/images/' + ${product.image}}" 
+                             alt="Ảnh sản phẩm" 
+                             style="width: 80px; height: 80px; object-fit: cover;" 
+                             class="img-thumbnail rounded"
+                             onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'80\' height=\'80\'%3E%3Crect fill=\'%23ddd\' width=\'80\' height=\'80\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.3em\' fill=\'%23999\' font-size=\'10\'%3ENo Image%3C/text%3E%3C/svg%3E';" />
+                        <span th:unless="${product.image}" class="text-muted small">Chưa có ảnh</span>
+                    </td>
+                    <td th:text="${product.category?.name}"></td>
+                    <td>
+                        <a class="btn btn-sm btn-primary" th:href="@{'/products/edit/' + ${product.id}}" sec:authorize="hasRole('ADMIN')">Sửa</a>
+                        <a class="btn btn-sm btn-danger ms-1" th:href="@{'/products/delete/' + ${product.id}}" sec:authorize="hasRole('ADMIN')" onclick="return confirm('Xác nhận xóa?')">Xóa</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

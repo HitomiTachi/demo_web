@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head>
+    <title>Sửa sản phẩm</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Sửa sản phẩm</h3>
+                </div>
+                <div class="card-body">
+                    <form th:action="@{'/products/edit/' + ${product.id}}" th:object="${product}" method="post" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label class="form-label">Mã sản phẩm</label>
+                            <input type="text" th:field="*{id}" class="form-control" readonly />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Tên sản phẩm</label>
+                            <input type="text" th:field="*{name}" class="form-control" />
+                            <div class="text-danger small" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Giá</label>
+                            <input type="number" th:field="*{price}" class="form-control" />
+                            <div class="text-danger small" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Hình ảnh</label>
+                            <input type="file" name="file" class="form-control" />
+                            <div class="text-danger small" th:if="${#fields.hasErrors('image')}" th:errors="*{image}"></div>
+                            <div th:if="${product.image}" class="mt-2">
+                                <img th:src="@{'/images/' + ${product.image}}" alt="Ảnh sản phẩm" width="100" class="img-thumbnail" />
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Loại danh mục</label>
+                            <select name="categoryId" class="form-select">
+                                <option value="">--Chọn loại--</option>
+                                <option th:each="category : ${categories}" 
+                                        th:value="${category.id}"
+                                        th:selected="${product.category != null && product.category.id == category.id}"
+                                        th:text="${category.name}"></option>
+                            </select>
+                            <div class="text-danger small" th:if="${#fields.hasErrors('category')}" th:errors="*{category}"></div>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <a class="btn btn-secondary" th:href="@{/products}">Quay lại</a>
+                            <button type="submit" class="btn btn-primary">Cập nhật</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

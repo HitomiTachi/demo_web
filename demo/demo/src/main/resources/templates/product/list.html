@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{product/_layout}">
+<head>
+    <title>Danh sách sản phẩm</title>
+</head>
+<body>
+<div layout:fragment="content" class="container body-content">
+    <div th:if="${success}" class="alert alert-success">[[${success}]]</div>
+
+    <a th:href="@{/products/add}" class="btn btn-primary" sec:authorize="hasRole('ADMIN')">Create New Product</a>
+
+    <form th:if="${!searchMode}" th:action="@{/products}" method="get" class="row g-2 align-items-end my-3">
+        <input type="hidden" name="page" value="0"/>
+        <div class="col-auto">
+            <label class="form-label mb-0">Danh mục</label>
+            <select name="categoryId" class="form-select" onchange="this.form.submit()">
+                <option value="0" th:selected="${filterCategoryId == 0}">Tất cả</option>
+                <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}"
+                        th:selected="${filterCategoryId == c.id}"></option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <label class="form-label mb-0">Sắp xếp theo giá</label>
+            <select name="sort" class="form-select" onchange="this.form.submit()">
+                <option value="asc" th:selected="${sort == 'asc'}">Tăng dần</option>
+                <option value="desc" th:selected="${sort == 'desc'}">Giảm dần</option>
+            </select>
+        </div>
+    </form>
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Mã</th>
+            <th>Tên</th>
+            <th>Giá</th>
+            <th>Hình ảnh</th>
+            <th>Loại</th>
+            <th sec:authorize="hasRole('ADMIN')">Hành động</th>
+            <th>Giỏ hàng</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="product : ${products}">
+            <td th:text="${product.id}"></td>
+            <td th:text="${product.name}"></td>
+            <td th:text="${#numbers.formatInteger(product.price, 0, 'POINT')} + ' ₫'"></td>
+            <td>
+                <img th:if="${product.image}"
+                     th:src="@{'/images/' + ${product.image}}"
+                     alt="" width="100"
+                     onerror="this.style.display='none'"/>
+                <span th:unless="${product.image}" class="text-muted small">—</span>
+            </td>
+            <td th:text="${product.category?.name}"></td>
+            <td sec:authorize="hasRole('ADMIN')">
+                <a class="btn btn-sm btn-primary" th:href="@{'/products/edit/' + ${product.id}}">Sửa</a>
+                <a class="btn btn-sm btn-danger" th:href="@{'/products/delete/' + ${product.id}}"
+                   onclick="return confirm('Xác nhận xóa?')">Xóa</a>
+            </td>
+            <td>
+                <form th:action="@{/cart/add/{id}(id=${product.id})}" method="post" class="d-inline">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <button type="submit" class="btn btn-sm btn-outline-success">Thêm vào giỏ</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div th:if="${!searchMode}">
+        <div>
+            <span th:text="${products.number + 1}"></span> /
+            <span th:text="${products.totalPages}"></span>
+        </div>
+
+        <div>
+            <a th:if="${products.hasPrevious()}"
+               th:href="@{/products(page=${products.number - 1}, sort=${sort}, categoryId=${filterCategoryId})}">Previous</a>
+
+            <a th:if="${products.hasNext()}"
+               th:href="@{/products(page=${products.number + 1}, sort=${sort}, categoryId=${filterCategoryId})}">Next</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

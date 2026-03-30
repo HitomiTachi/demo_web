@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{product/_layout}">
+<head>
+    <title>Giỏ hàng</title>
+</head>
+<body>
+<div layout:fragment="content" class="container body-content">
+    <h1>Giỏ hàng của bạn</h1>
+    <table class="table table-striped">
+        <tr>
+            <th>Tên sản phẩm</th>
+            <th>Hình ảnh</th>
+            <th>Giá</th>
+            <th>Số lượng</th>
+            <th>Thành tiền</th>
+            <th>Hành động</th>
+        </tr>
+
+        <tr th:each="item : ${cartItems}">
+            <td th:text="${item.name}"></td>
+            <td>
+                <img th:if="${item.image}" th:src="@{'/images/' + ${item.image}}" width="100" alt=""/>
+            </td>
+            <td th:text="${item.price}"></td>
+            <td>
+                <form th:action="@{/cart/update}" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <input type="hidden" name="productId" th:value="${item.id}"/>
+                    <input type="number" name="quantity"
+                           th:value="${item.quantity}" min="1"/>
+                    <button type="submit">Cập nhật</button>
+                </form>
+            </td>
+            <td th:text="${item.price * item.quantity}"></td>
+            <td>
+                <a th:href="@{/cart/remove/{id}(id=${item.id})}">Xóa</a>
+            </td>
+        </tr>
+
+        <tr>
+            <td colspan="5"></td>
+            <td class="total-price" colspan="2">
+                <h3>Total Price: <span th:text="${total}"></span></h3>
+                <form th:action="@{/cart/order}" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <button type="submit" class="btn btn-success">Order</button>
+                </form>
+            </td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>
