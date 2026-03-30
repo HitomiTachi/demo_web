@@ -23,6 +23,16 @@ public class Order {
 
     private double totalAmount;
 
+    /** Thông tin giao hàng (checkout) */
+    @Column(length = 120)
+    private String recipientName;
+
+    @Column(length = 20)
+    private String phone;
+
+    @Column(length = 500)
+    private String shippingAddress;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")
     private UserAccount account;

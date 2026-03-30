@@ -1,5 +1,6 @@
 package com.example.demo.Service;
 
+import com.example.demo.dto.CheckoutResult;
 import com.example.demo.Model.CartItem;
 import com.example.demo.Model.Order;
 import com.example.demo.Model.OrderDetail;
@@ -81,18 +82,23 @@ public class CartService {
     }
 
     /**
-     * Phần này tài liệu chưa mô tả đầy đủ code; bổ sung tối thiểu: lưu Order + OrderDetail, gán UserAccount khi đã đăng nhập DB, xóa giỏ.
+     * Tạo Order + OrderDetail, lưu thông tin giao hàng, gán UserAccount khi đã đăng nhập, xóa giỏ.
+     *
+     * @return {@code null} nếu giỏ rỗng hoặc không tạo được chi tiết đơn
      */
     @Transactional
-    public void checkout() {
+    public CheckoutResult checkout(String recipientName, String phone, String shippingAddress) {
         if (items.isEmpty()) {
-            return;
+            return null;
         }
 
         Order order = new Order();
         order.setOrderDate(LocalDateTime.now());
         order.setPaid(false);
         order.setTotalAmount(getTotal());
+        order.setRecipientName(recipientName);
+        order.setPhone(phone);
+        order.setShippingAddress(shippingAddress);
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof org.springframework.security.core.userdetails.UserDetails) {
@@ -114,10 +120,11 @@ public class CartService {
         }
 
         if (order.getOrderDetails().isEmpty()) {
-            return;
+            return null;
         }
 
-        orderRepository.save(order);
+        Order saved = orderRepository.save(order);
         clear();
+        return new CheckoutResult(saved.getId(), saved.getTotalAmount());
     }
 }

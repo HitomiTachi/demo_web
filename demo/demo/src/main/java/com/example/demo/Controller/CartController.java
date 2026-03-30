@@ -44,13 +44,4 @@ public class CartController {
         cartService.clear();
         return "redirect:/cart";
     }
-
-    @PostMapping("/order")
-    public String checkout() {
-        if (cartService.getItems().isEmpty()) {
-            return "redirect:/cart";
-        }
-        cartService.checkout();
-        return "redirect:/order/success";
-    }
 }
